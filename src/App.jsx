@@ -42,6 +42,10 @@ export default function App() {
   const { livros, loading, adicionar, atualizar, remover } = useLivros(user);
 
   useEffect(() => {
+    if (!auth) {
+      setAuthLoading(false);
+      return;
+    }
     const unsub = onAuthStateChanged(auth, u => { setUser(u); setAuthLoading(false); });
     return () => unsub();
   }, []);
@@ -110,9 +114,11 @@ export default function App() {
         <div style={{ background:`${DA.mustard}22`, borderBottom:`1px solid ${DA.mustard}44`, padding:'10px 16px', textAlign:'center' }}>
           <span style={{ fontSize:'13px', color:DA.chocolate, fontWeight:'600' }}>
             📖 Navegando sem conta — seus livros ficam salvos só neste dispositivo.{' '}
-            <button onClick={() => auth.signInWithPopup?.() } style={{ background:'none', border:'none', color:DA.oxblood, fontWeight:'800', cursor:'pointer', textDecoration:'underline', fontSize:'13px' }}>
-              Entre com Google
-            </button>{' '}para sincronizar em qualquer lugar.
+            {auth && (
+              <button onClick={() => auth && import('firebase/auth').then(m => m.signInWithPopup(auth, import('./firebase').then(f => f.provider)))} style={{ background:'none', border:'none', color:DA.oxblood, fontWeight:'800', cursor:'pointer', textDecoration:'underline', fontSize:'13px' }}>
+                Entre com Google
+              </button>
+            )}
           </span>
         </div>
       )}
